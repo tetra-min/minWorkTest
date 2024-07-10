@@ -7,13 +7,18 @@ export default () => {
 
   const resolveConfig = defineConfig({
     plugins: [
-      react()
+      react(),
     ],
     resolve: {
       alias: {
-        '@': dirname + '/src'
+        '@': dirname + '/src',
       },
-    }
+    },
+    // build: {
+    //   rollupOptions: {
+    //     input: dirname + '/router.tsx',
+    //   }
+    // },
   });
 
   return resolveConfig;
