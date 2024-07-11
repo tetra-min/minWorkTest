@@ -1,4 +1,3 @@
-// import { ReactNode } from 'react';
 import Header from '@/pages/Header';
 import Footer from '@/pages/Footer';
 
