@@ -1,4 +1,4 @@
-import { Suspense, lazy, createElement, ReactNode } from "react";
+import { Suspense, createElement, ReactNode, FC } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import { PAGE_DIR, LAYOUT_DIR } from "@/../env";
 import { uniqueArr } from "@/Utils";
@@ -7,23 +7,27 @@ import { uniqueArr } from "@/Utils";
 // import DefaultMain from "@/pages/Main";
 // import testMain from "@/pages/test/Main";
 
+interface ModuleImportInterface {
+    default: FC;
+}
+
 const router = (() => {
     let routePath: Array<string> = ["/"];
     let routeParam: Array<{
-        path: string,
-        element: ReactNode,
-        loader?: any,
+        path: string;
+        element: ReactNode;
+        loader?: any;
         children?: [
             {
-                path: string,
-                element: ReactNode,
-                loader?: any,
-            },
-        ]
+                path: string;
+                element: ReactNode;
+                loader?: any;
+            }
+        ];
     }> = [];
 
-    const pagesTsx = import.meta.glob('@/pages/**');
-    const layoutsTsx = import.meta.glob('@/layouts/**');
+    const pagesTsx: Record<string, ModuleImportInterface> = import.meta.glob("@/pages/**", { eager: true });
+    const layoutsTsx: Record<string, ModuleImportInterface> = import.meta.glob("@/layouts/**", { eager: true });
     const pageDir = PAGE_DIR;
     const layoutDir = LAYOUT_DIR;
 
@@ -44,35 +48,39 @@ const router = (() => {
     /* routeParam set */
     if (routePath.length) {
         routeParam = routePath.map((path) => {
-            let mainPath = pageDir + '/Main';
-            let layoutPath = layoutDir + '/Layout';
+            let importMainComponent = pagesTsx[pageDir + "/Main.tsx"];
+            let importLayoutComponent = layoutsTsx[layoutDir + "/Layout.tsx"];
 
             if (path !== "/") {
                 for (const pageTsxPath in pagesTsx) {
-                    const checkMainPath = pageDir + path + '/Main';
-    
+                    const checkMainPath = pageDir + path + "/Main";
+
                     if (pageTsxPath.indexOf(checkMainPath) !== -1) {
-                        mainPath = checkMainPath;
+                        importMainComponent = pagesTsx[pageTsxPath];
                         break;
                     }
                 }
 
                 for (const layoutTsxPath in layoutsTsx) {
-                    const checkLayoutPath = layoutDir + path + '/Layout';
-    
+                    const checkLayoutPath = layoutDir + path + "/Layout";
+
                     if (layoutTsxPath.indexOf(checkLayoutPath) !== -1) {
-                        layoutPath = checkLayoutPath;
+                        importLayoutComponent = layoutsTsx[layoutTsxPath];
                         break;
                     }
                 }
             }
 
-            const mainComponent = lazy(() => import(mainPath));
-            const layoutComponent = lazy(() => import(layoutPath));
-            
+            const mainComponent = importMainComponent.default;
+            const layoutComponent = importLayoutComponent.default;
+
             return {
                 path: path,
-                element: createElement(Suspense, {}, createElement(layoutComponent, {}, [createElement(mainComponent)])),
+                element: createElement(
+                    Suspense,
+                    {},
+                    createElement(layoutComponent, {}, [createElement(mainComponent, { key: "mainComponent" })])
+                ),
             };
         });
     }
