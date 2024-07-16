@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import headerStyle from "@/styles/header.module.css";
 
 const Header = () => {
-    console.log(headerStyle);
     return (
         <>
             <header id={headerStyle.header}>
