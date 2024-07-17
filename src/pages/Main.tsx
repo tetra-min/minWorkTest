@@ -26,7 +26,7 @@ function App() {
                     </p>
                 </div> */}
                 <p className="read-the-docs">リンク</p>
-                <Link to="/test">Go test2!</Link>
+                <Link to="/table">Go test2!</Link>
                 <br />
                 <Link to="/test2/test21">Go test21!</Link>
             </div>

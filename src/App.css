@@ -5,6 +5,11 @@
   text-align: center
 } */
 
+header + *,
+header + #main {
+    margin-top: var(--headerHeight, 64px);
+}
+
 *,
 *::before,
 *::after {

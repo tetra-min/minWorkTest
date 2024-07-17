@@ -1,6 +1,13 @@
 #header {
     padding: 8px;
+    position: fixed;
+    background: #fff;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 3;
 }
+
 .headerFlexBlock {
     display: flex;
 }
