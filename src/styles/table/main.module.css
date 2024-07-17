@@ -1,7 +1,62 @@
 #main {
     padding: 16px;
 }
+.borderTopNone {
+    border-top: unset;
+}
+.borderBottomNone {
+    border-bottom: unset;
+}
+.borderLeftNone {
+    border-left: unset;
+}
+.borderRightNone {
+    border-right: unset;
+}
 .dataTableCellPadding {
     padding: 8px;
     /* border: 0.5px solid blue; */
+}
+.dataTableHeaderCell {
+    border-width: 1px 1px 1px 0;
+    /* color: rgba(0, 0, 255, 0.6); */
+    /* color: blue; */
+    /* border-color: blue; */
+    border-color: rgba(0, 0, 255, 0.35);
+    background: aqua;
+    /* transition: box-shadow 0.2s; */
+    font-weight: normal;
+    /* height: 18px; */
+    line-height: 12px;
+    font-size: 0.9rem;
+}
+.dataTableHeaderCell:first-of-type {
+    border-width: 1px;
+}
+.dataTableBodyCell {
+    border-width: 0px 1px 1px 0px;
+    /* border-color: blue; */
+    border-color: rgba(0, 0, 255, 0.35);
+    font-weight: normal;
+    /* height: 18px; */
+    line-height: 10px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+.dataTableBodyCell:first-of-type {
+    border-width: 0px 1px 1px 1px;
+}
+.dataTableBodySaturDay {
+    background: #ccffcc;
+    color: red;
+}
+.dataTableBodySunday {
+    background: #ccffcc;
+    color: red;
+}
+.dataTableBodyCellBackground {
+    background: #99ccff;
+}
+.dataTableBodyCellMinWidth {
+    min-width: 80px;
 }
