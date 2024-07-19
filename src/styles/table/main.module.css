@@ -1,5 +1,5 @@
 #main {
-    --main-table-min-width: 1200px;
+    --main-table-min-width: 1280px;
     padding: 16px;
     max-width: 1600px;
     margin-left: auto;
@@ -26,14 +26,15 @@
 .mainTopInner .fixedRecordTimeBox {
     display: flex;
     flex-direction: column;
-    /* width: 30%; */
     min-width: 300px;
 }
 .mainTopInner .fixedRecordTimeBox .boxHeader {
-    /* display: flex; */
-    /* justify-content: center; */
-    padding: 8px;
-    line-height: 10px;
+    /* padding: 8px; */
+    padding: 0 8px;
+    /* line-height: 10px; */
+    /* line-height: 26px; */
+    line-height: 1.6;
+    height: 26px;
     font-size: 0.9rem;
     border: 1px solid rgba(0, 0, 255, 0.35);
     background: #99ccff;
@@ -43,9 +44,13 @@
     display: flex;
 } */
 .mainTopInner .fixedRecordTimeBox .BodyCell {
-    padding: 8px;
+    /* padding: 8px; */
     text-align: center;
-    line-height: 10px;
+    /* line-height: 10px; */
+    padding: 0 8px;
+    /* line-height: 26px; */
+    line-height: 1.6;
+    height: 26px;
     font-size: 0.9rem;
     min-width: 80px;
     width: calc(100% / 3);
@@ -68,8 +73,12 @@
 .mainTopInner .totalDisplayBox .boxHeader {
     /* display: flex;
     justify-content: center; */
-    padding: 8px;
-    line-height: 10px;
+    /* padding: 8px; */
+    /* line-height: 10px; */
+    padding: 0 8px;
+    /* line-height: 26px; */
+    line-height: 1.6;
+    height: 26px;
     font-size: 0.9rem;
     border: 1px solid rgba(0, 0, 255, 0.35);
     background: #99ccff;
@@ -78,9 +87,13 @@
     display: flex;
 } */
 .mainTopInner .totalDisplayBox .BodyCell {
-    padding: 8px;
+    /* padding: 8px; */
     text-align: center;
-    line-height: 10px;
+    /* line-height: 10px; */
+    padding: 0 8px;
+    /* line-height: 26px; */
+    line-height: 1.6;
+    height: 26px;
     font-size: 0.9rem;
     min-width: 80px;
     width: calc(100% / 5);
@@ -97,9 +110,9 @@
     margin-top: 16px;
     min-width: var(--main-table-min-width);
 }
-/* #mainTableSection #mainDataTable {
-    min-width: var(--main-table-min-width);
-} */
+#mainTableSection #mainDataTable table {
+    table-layout: fixed;
+}
 .borderTopNone {
     border-top: unset;
 }
@@ -113,8 +126,9 @@
     border-right: unset;
 }
 .dataTableCellPadding {
-    padding: 8px;
+    /* padding: 8px; */
     /* border: 0.5px solid blue; */
+    padding: 0 8px;
 }
 .dataTableHeaderCell {
     border-width: 1px 1px 1px 0;
@@ -126,7 +140,10 @@
     /* transition: box-shadow 0.2s; */
     font-weight: normal;
     /* height: 18px; */
-    line-height: 12px;
+    /* line-height: 12px; */
+    /* line-height: 26px; */
+    line-height: 1.6;
+    height: 26px;
     font-size: 0.9rem;
 }
 .dataTableHeaderCell:first-of-type {
@@ -138,18 +155,55 @@
     border-color: rgba(0, 0, 255, 0.35);
     font-weight: normal;
     /* height: 18px; */
-    line-height: 10px;
+    /* line-height: 10px; */
+    /* line-height: 26px; */
+    line-height: 1.6;
+    height: 26px;
     font-size: 0.9rem;
     text-align: center;
+    position: relative;
 }
 .dataTableBodyCell:first-of-type {
     border-width: 0px 1px 1px 1px;
 }
-.dataTableBodySaturDay {
+.dataTableBodyCell.editAvailable:hover {
+    cursor: pointer;
+    background: aqua;
+    /* opacity: 0.5; */
+    /* border-color: blue; */
+}
+.dataTableBodyCellTextEllipsis {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    position: relative;
+}
+/* .dataTableBodyCellTextEllipsis:before {
+    content: attr(data-tooltip);
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 10px 7px;
+    border-radius: 10px;
+    max-width: 300px;
+    width: 250%;
+    left: 25%;
+    bottom: 120%;
+    opacity: 0;
+    transition: all 0.5s linear;
+}
+.dataTableBodyCellTextEllipsis:hover:before {
+    opacity: 1;
+} */
+/* .dataTableBodySaturDay {
     background: #ccffcc;
     color: red;
-}
-.dataTableBodySunday {
+} */
+/* .dataTableBodySunday {
+    background: #ccffcc;
+    color: red;
+} */
+.dataTableBodyDisable {
     background: #ccffcc;
     color: red;
 }
@@ -158,6 +212,16 @@
 }
 .dataTableBodyCellMinWidth {
     min-width: 80px;
+}
+.editInputText {
+    padding: unset;
+    text-align: right;
+    position: absolute;
+    width: 95%;
+    height: 95%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 @media screen and (max-width: 1200px) {

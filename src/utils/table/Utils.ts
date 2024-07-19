@@ -1,5 +1,55 @@
 import mainStyle from "@/styles/table/main.module.css";
 import type { timeRecordType } from "@/type/table/TableType";
+import { ColumnBodyOptions } from "primereact/column";
+import { createElement } from "react";
+
+/* Cell Map
+1: 日
+2: 曜日
+3: 予定-出社
+4: 予定-退社
+5: 予定-予働（h）
+6: 実績-出社
+7: 実績-退社
+8: 実績-休憩時間
+9: 実績-実働（h）
+10: 深夜実績 実働(h)
+11: 日有給申請
+12: 時間有給申請
+13: 適用
+14: 承認
+15 :overtime-実績
+*/
+
+export const tableCellMap: {
+    [key: string]: string;
+} = {
+    1: "date",
+    2: "day",
+    3: "scheduleArriveWorkTime",
+    4: "scheduleLeavingWorkTime",
+    5: "schedulePredictionWorkingTime",
+    6: "actualArriveWorkTime",
+    7: "actualLeavingWorkTime",
+    8: "actualBreaktime",
+    9: "actualWorkingTime",
+    10: "nightWorkingTime",
+    11: "paidLeaveApplydate",
+    12: "paidLeaveApplyHour",
+    13: "AnyApplicationKind",
+    14: "approval",
+    15: "overtimeWorkingTime",
+};
+
+export const tableEditAvailableKey = [
+    "actualArriveWorkTime",
+    "actualLeavingWorkTime",
+    "nightWorkingTime",
+    "paidLeaveApplydate",
+    "paidLeaveApplyHour",
+    "AnyApplicationKind",
+    "approval",
+];
 
 export function getTimeRecord(
     currentYear: number,
@@ -7,7 +57,7 @@ export function getTimeRecord(
     fixedArriveTime: string,
     fixedLeavingTime: string,
     fixedlunchTime: string
-): timeRecordType {
+): timeRecordType[] {
     const year = currentYear;
     const month = currentMonth;
     const lastDate = getLastDate(year, month);
@@ -61,6 +111,41 @@ export function getTimeRecord(
             temp.overtimeWorkingTime = "";
         }
 
+        // const temp = {
+        //     1: i,
+        //     2: dayStr,
+        //     3: startTime,
+        //     4: endTime,
+        //     5: schedulePredictionWorkingTime,
+        //     6: "",
+        //     7: "",
+        //     8: defaultBreakTime,
+        //     9: "",
+        //     10: "",
+        //     11: "",
+        //     12: "",
+        //     13: "",
+        //     14: "",
+        //     15: "",
+        // };
+
+        // // 土, 日
+        // if (isEmptyValueDay(dayStr)) {
+        //     temp[3] = "";
+        //     temp[4] = "";
+        //     temp[5] = "";
+        //     temp[6] = "";
+        //     temp[7] = "";
+        //     temp[8] = "";
+        //     temp[9] = "";
+        //     temp[10] = "";
+        //     temp[11] = "";
+        //     temp[12] = "";
+        //     temp[13] = "";
+        //     temp[14] = "";
+        //     temp[15] = "";
+        // }
+
         resultTimeRecord.push(temp);
     }
 
@@ -106,20 +191,57 @@ export function calcHoursDiff(startTime: string, endTime: string, breakTime: str
     return hoursFormat(diffMinutes / 60, diffMinutes % 60);
 }
 
-export function bodyCellClassName(content: any) {
+export function bodyCellClassName(content: any, options: ColumnBodyOptions) {
+    const field = options.field;
     let name = "" || `${mainStyle["dataTableCellPadding"]} ${mainStyle["dataTableBodyCell"]}`;
 
-    if (content.day == "土") {
-        name += " " + mainStyle["dataTableBodySaturDay"];
+    if (isEmptyValueDay(content.day)) {
+        name += " " + mainStyle["dataTableBodyDisable"];
+        return name;
     }
 
-    if (content.day == "日") {
-        name += " " + mainStyle["dataTableBodySunday"];
+    // if (content.day == "土") {
+    //     name += " " + mainStyle["dataTableBodySaturDay"];
+    // }
+
+    // if (content.day == "日") {
+    //     name += " " + mainStyle["dataTableBodySunday"];
+    // }
+
+    if (tableEditAvailableKey.indexOf(field) !== -1) {
+        name += " " + mainStyle["editAvailable"];
     }
+
+    // if (content[2] == "土") {
+    //     name += " " + mainStyle["dataTableBodySaturDay"];
+    // }
+
+    // if (content[2] == "日") {
+    //     name += " " + mainStyle["dataTableBodySunday"];
+    // }
 
     return name;
 }
 
+export function bodyTemplate(rowData: timeRecordType, options: ColumnBodyOptions) {
+    // console.log(options);
+    const field = options["field"] as keyof timeRecordType;
+
+    return createCellChild(rowData[field]);
+}
+
 export function hoursFormat(hours: number, minutes: number) {
     return `${Math.floor(hours).toString()}:${minutes.toString().padStart(2, "0")}`;
+}
+
+export function createCellChild(text: any, html: boolean = false) {
+    if (html) {
+        return `
+            <div class="${mainStyle["dataTableBodyCellTextEllipsis"]}" data-tooltip="${text}">
+                ${text}
+            </div>
+        `;
+    }
+
+    return createElement("div", { className: mainStyle["dataTableBodyCellTextEllipsis"] }, text);
 }
