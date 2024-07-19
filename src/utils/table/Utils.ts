@@ -51,7 +51,7 @@ export const tableEditAvailableKey = [
     "approval",
 ];
 
-export function getTimeRecord(
+export function getInitTimeRecord(
     currentYear: number,
     currentMonth: number,
     fixedArriveTime: string,
@@ -93,9 +93,6 @@ export function getTimeRecord(
 
         // 土, 日
         if (isEmptyValueDay(dayStr)) {
-            temp.scheduleArriveWorkTime = "";
-            temp.scheduleLeavingWorkTime = "";
-            temp.schedulePredictionWorkingTime = "";
             temp.scheduleArriveWorkTime = "";
             temp.scheduleLeavingWorkTime = "";
             temp.schedulePredictionWorkingTime = "";

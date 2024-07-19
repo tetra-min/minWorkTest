@@ -12,7 +12,7 @@ import { rangeArray } from "@/Utils";
 import {
     tableCellMap,
     tableEditAvailableKey,
-    getTimeRecord,
+    getInitTimeRecord,
     isEmptyValueDay,
     bodyCellClassName,
     bodyTemplate,
@@ -20,10 +20,13 @@ import {
 } from "@/utils/table/Utils";
 import type { timeRecordType, mainTableHeaderType } from "@/type/table/TableType";
 
+// test data
+import { userData as tempUserData, tableData as tempTableData } from "@/utils/table/TempData";
+
 const App = () => {
     const [timeRecord, setTimeRecord] = useState<timeRecordType[]>([]);
-    const [selectYear, setSelectYear] = useState<number>(0);
-    const [selectMonth, setSelectMonth] = useState<number>(0);
+    const [selectYear, setSelectYear] = useState<number>(new Date().getFullYear());
+    const [selectMonth, setSelectMonth] = useState<number>(new Date().getMonth() + 1);
     // const selectYear = useRef<Dropdown>(null);
     // const selectMonth = useRef<Dropdown>(null);
     // const selectYear = useRef<number>(0);
@@ -32,6 +35,7 @@ const App = () => {
     const eventAvailableCell = useRef<{
         [rowIndex: number]: Array<number>;
     }>({});
+    const userData = useRef<typeof tempUserData>(tempUserData);
     const fixedArriveTime = useRef<string>("");
     const fixedLeavingTime = useRef<string>("");
     const fixedlunchTime = useRef<string>("");
@@ -185,48 +189,57 @@ const App = () => {
 
     useEffect(() => {
         // ref
-        // selectYear.current = 2024;
-        // selectMonth.current = 7;
-        fixedArriveTime.current = "9:00";
-        fixedLeavingTime.current = "18:00";
-        fixedlunchTime.current = "1:00";
+        eventAvailableCell.current = {};
+        fixedArriveTime.current = userData.current.fixedArriveTime;
+        fixedLeavingTime.current = userData.current.fixedLeavingTime;
+        fixedlunchTime.current = userData.current.fixedlunchTime;
 
-        const tempSelectYear = 2024;
-        const tempSelectMonth = 7;
+        // const tempSelectYear = 2024;
+        // const tempSelectMonth = 7;
 
-        setSelectYear(tempSelectYear);
-        setSelectMonth(tempSelectMonth);
+        // setSelectYear(tempSelectYear);
+        // setSelectMonth(tempSelectMonth);
 
-        const record = getTimeRecord(
-            tempSelectYear,
-            tempSelectMonth,
-            // selectYear,
-            // selectMonth,
-            // selectYear.current,
-            // selectMonth.current,
+        initSetTimeRecord(
+            selectYear,
+            selectMonth,
             fixedArriveTime.current,
             fixedLeavingTime.current,
             fixedlunchTime.current
         );
 
-        // edit利用可能セル
-        for (const [index, recordValue] of Object.entries(record)) {
-            if (!isEmptyValueDay(recordValue.day)) {
-                // eventInvalidCellInfo.current[parseInt(index) + 1] = [...rangeArray(1, Object.keys(record).length)];
-                eventAvailableCell.current[parseInt(index)] = [...rangeArray(1, Object.keys(record).length)]
-                    .filter((_v, idx) => tableEditAvailableKey.indexOf(tableCellMap[idx + 1]) !== -1)
-                    .map((v) => v - 1);
-            }
-        }
+        // const record = getInitTimeRecord(
+        //     // tempSelectYear,
+        //     // tempSelectMonth,
+        //     selectYear,
+        //     selectMonth,
+        //     // selectYear.current,
+        //     // selectMonth.current,
+        //     fixedArriveTime.current,
+        //     fixedLeavingTime.current,
+        //     fixedlunchTime.current
+        // );
 
-        // setTimeout(() => {
-        //     setTimeRecord(record);
+        // // edit利用可能セル
+        // for (const [index, recordValue] of Object.entries(record)) {
+        //     if (!isEmptyValueDay(recordValue.day)) {
+        //         eventAvailableCell.current[parseInt(index)] = [...rangeArray(1, Object.keys(record).length)]
+        //             .filter((_v, idx) => tableEditAvailableKey.indexOf(tableCellMap[idx + 1]) !== -1)
+        //             .map((v) => v - 1);
+        //     }
+        // }
+        // // console.log("work..?");
+        // // console.log(record);
+        // // console.log(selectYear);
+        // // console.log(selectMonth);
+        // // setTimeout(() => {
+        // //     setTimeRecord(record);
 
-        //     // setLoading(false);
-        // }, 1000);
+        // //     // setLoading(false);
+        // // }, 1000);
 
-        setTimeRecord(record);
-    }, []);
+        // setTimeRecord(record);
+    }, [selectYear, selectMonth]);
 
     return (
         <Provider
@@ -391,6 +404,26 @@ const App = () => {
             <Tooltip target={mainStyle["dataTableBodyCellTextEllipsis"]} />
         </Provider>
     );
+
+    function initSetTimeRecord(...param: Parameters<typeof getInitTimeRecord>) {
+        // const param = arguments as typeof P;
+        console.log(param);
+        // const useParam = ...param;
+        const record = getInitTimeRecord(...param);
+
+        // console.log(record);
+
+        // edit利用可能セル
+        // for (const [index, recordValue] of Object.entries(record)) {
+        //     if (!isEmptyValueDay(recordValue.day)) {
+        //         eventAvailableCell.current[parseInt(index)] = [...rangeArray(1, Object.keys(record).length)]
+        //             .filter((_v, idx) => tableEditAvailableKey.indexOf(tableCellMap[idx + 1]) !== -1)
+        //             .map((v) => v - 1);
+        //     }
+        // }
+
+        setTimeRecord(record);
+    }
 
     function cellSelectHandler(e: DataTableCellClickEvent<timeRecordType[]>) {
         const target = e.originalEvent.target as HTMLElement;

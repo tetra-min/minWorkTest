@@ -7,7 +7,7 @@ import { Column } from "primereact/column";
 import { ColumnGroup } from "primereact/columngroup";
 import { Row } from "primereact/row";
 import { rangeArray } from "@/Utils";
-import { getTimeRecord } from "@/utils/table/Utils";
+// import { getTimeRecord } from "@/utils/table/Utils";
 import type { providerDataType } from "@/type/table/TableType";
 
 function View() {
@@ -135,15 +135,15 @@ function View() {
 
         setSelectYear(changeYear);
 
-        const record = getTimeRecord(
-            changeYear,
-            selectMonth,
-            fixedArriveTime.current,
-            fixedLeavingTime.current,
-            fixedlunchTime.current
-        );
+        // const record = getTimeRecord(
+        //     changeYear,
+        //     selectMonth,
+        //     fixedArriveTime.current,
+        //     fixedLeavingTime.current,
+        //     fixedlunchTime.current
+        // );
 
-        setTimeRecord(record);
+        // setTimeRecord(record);
     }
 
     function selectMonthChange(e: DropdownChangeEvent) {
@@ -151,15 +151,15 @@ function View() {
 
         setSelectMonth(changeMonth);
 
-        const record = getTimeRecord(
-            selectYear,
-            changeMonth,
-            fixedArriveTime.current,
-            fixedLeavingTime.current,
-            fixedlunchTime.current
-        );
+        // const record = getTimeRecord(
+        //     selectYear,
+        //     changeMonth,
+        //     fixedArriveTime.current,
+        //     fixedLeavingTime.current,
+        //     fixedlunchTime.current
+        // );
 
-        setTimeRecord(record);
+        // setTimeRecord(record);
     }
 }
 
