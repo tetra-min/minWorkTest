@@ -18,10 +18,16 @@ function View() {
         selectMonth,
         setSelectYear,
         setSelectMonth,
-        setTimeRecord,
+        // setTimeRecord,
         fixedArriveTime,
         fixedLeavingTime,
         fixedlunchTime,
+        // totalSchedulePredictionWorkingTime,
+        // totalActualWorkingTime,
+        // totalNightWorkingTime,
+        // totalPaidLeaveApplydate,
+        // totalPaidLeaveApplyHour,
+        calcData,
     } = data;
 
     const selectYearOption = rangeArray(2009, 2024).map((v) => {
@@ -103,26 +109,26 @@ function View() {
                             className={mainStyle["totalDisplayBox"]}
                             value={[
                                 {
-                                    a: "予働計(h)",
-                                    b: "実働計(h)",
-                                    c: "深夜実績実働(h)",
-                                    d: "日有給申請",
-                                    e: "時間有給申請",
+                                    totalSchedulePredictionWorkingTime: "予働計(h)",
+                                    totalActualWorkingTime: "実働計(h)",
+                                    totalNightWorkingTime: "深夜実績実働(h)",
+                                    totalPaidLeaveApplydate: "日有給申請",
+                                    totalPaidLeaveApplyHour: "時間有給申請",
                                 },
                                 {
-                                    a: "a",
-                                    b: "b",
-                                    c: "c",
-                                    d: "d",
-                                    e: "e",
+                                    totalSchedulePredictionWorkingTime: calcData.totalSchedulePredictionWorkingTime,
+                                    totalActualWorkingTime: calcData.totalActualWorkingTime,
+                                    totalNightWorkingTime: calcData.totalNightWorkingTime,
+                                    totalPaidLeaveApplydate: calcData.totalPaidLeaveApplydate,
+                                    totalPaidLeaveApplyHour: calcData.totalPaidLeaveApplyHour,
                                 },
                             ]}
                         >
-                            <Column bodyClassName={mainStyle["BodyCell"]} field="a" />
-                            <Column bodyClassName={mainStyle["BodyCell"]} field="b" />
-                            <Column bodyClassName={mainStyle["BodyCell"]} field="c" />
-                            <Column bodyClassName={mainStyle["BodyCell"]} field="d" />
-                            <Column bodyClassName={mainStyle["BodyCell"]} field="e" />
+                            <Column bodyClassName={mainStyle["BodyCell"]} field="totalSchedulePredictionWorkingTime" />
+                            <Column bodyClassName={mainStyle["BodyCell"]} field="totalActualWorkingTime" />
+                            <Column bodyClassName={mainStyle["BodyCell"]} field="totalNightWorkingTime" />
+                            <Column bodyClassName={mainStyle["BodyCell"]} field="totalPaidLeaveApplydate" />
+                            <Column bodyClassName={mainStyle["BodyCell"]} field="totalPaidLeaveApplyHour" />
                         </DataTable>
                     </div>
                 </div>

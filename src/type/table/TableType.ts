@@ -57,4 +57,18 @@ export type providerDataType = {
     fixedArriveTime: MutableRefObject<string>;
     fixedLeavingTime: MutableRefObject<string>;
     fixedlunchTime: MutableRefObject<string>;
+    // totalSchedulePredictionWorkingTime: MutableRefObject<string>;
+    // totalActualWorkingTime: MutableRefObject<string>;
+    // totalNightWorkingTime: MutableRefObject<string>;
+    // totalPaidLeaveApplydate: MutableRefObject<string>;
+    // totalPaidLeaveApplyHour: MutableRefObject<string>;
+    calcData: calcDataType;
+};
+
+export type calcDataType = {
+    totalSchedulePredictionWorkingTime?: string;
+    totalActualWorkingTime?: string;
+    totalNightWorkingTime?: string;
+    totalPaidLeaveApplydate?: string;
+    totalPaidLeaveApplyHour?: string;
 };

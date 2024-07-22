@@ -1,5 +1,6 @@
 #main {
     --main-table-min-width: 1280px;
+    --input-outline-color: rgba(0, 0, 255, 0.65);
     padding: 16px;
     max-width: 1600px;
     margin-left: auto;
@@ -162,6 +163,14 @@
     font-size: 0.9rem;
     text-align: center;
     position: relative;
+}
+/* .dataTableBodyCell:focus-visible,
+.dataTableBodyCell input:focus-visible {
+    outline-color: var(--input-outline-color);
+} */
+.dataTableBodyCell:focus,
+.dataTableBodyCell input:focus {
+    outline-color: var(--input-outline-color);
 }
 .dataTableBodyCell:first-of-type {
     border-width: 0px 1px 1px 1px;

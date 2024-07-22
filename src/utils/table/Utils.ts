@@ -21,6 +21,8 @@ import { createElement } from "react";
 15 :overtime-実績
 */
 
+export let year = "2024";
+
 export const tableCellMap: {
     [key: string]: string;
 } = {
@@ -153,6 +155,17 @@ export function isEmptyValueDay(day: string) {
     return ["土", "日"].indexOf(day) !== -1;
 }
 
+// export function isEmptyValueDay(date: string) {
+//     const day = new Date(date).getDay();
+
+//     // 土, 日
+//     if ([0, 6].indexOf(day) !== -1) {
+//         return true;
+//     }
+
+//     return false;
+// }
+
 export function getLastDate(year: number, month: number = 1) {
     const date = new Date(year, month, 0);
 
@@ -186,6 +199,26 @@ export function calcHoursDiff(startTime: string, endTime: string, breakTime: str
     }
 
     return hoursFormat(diffMinutes / 60, diffMinutes % 60);
+}
+
+export function calcHoursAdd(targetTime: string, addTime: string) {
+    const [startHours, startMinutes] = targetTime.split(":");
+    const [endHours, endMinutes] = addTime.split(":");
+    const startDateTime = parseInt(startHours) * 60 + parseInt(startMinutes);
+    const endDateTime = parseInt(endHours) * 60 + parseInt(endMinutes);
+    const addMinutes = startDateTime + endDateTime;
+
+    return hoursFormat(addMinutes / 60, addMinutes % 60);
+}
+
+export function reduceCalcHoursAdd(accumulator: string, currentValue: timeRecordType, useKey: string) {
+    const key = useKey as keyof timeRecordType;
+
+    if (currentValue[key]) {
+        return calcHoursAdd(accumulator,(currentValue[key] as string));
+    } else {
+        return accumulator;
+    }
 }
 
 export function bodyCellClassName(content: any, options: ColumnBodyOptions) {
@@ -228,13 +261,17 @@ export function bodyTemplate(rowData: timeRecordType, options: ColumnBodyOptions
 }
 
 export function hoursFormat(hours: number, minutes: number) {
+    if (isNaN(hours) || isNaN(minutes)) {
+        return "";
+    }
+
     return `${Math.floor(hours).toString()}:${minutes.toString().padStart(2, "0")}`;
 }
 
 export function createCellChild(text: any, html: boolean = false) {
     if (html) {
         return `
-            <div class="${mainStyle["dataTableBodyCellTextEllipsis"]}" data-tooltip="${text}">
+            <div class="${mainStyle["dataTableBodyCellTextEllipsis"]}">
                 ${text}
             </div>
         `;

@@ -1,3 +1,5 @@
+// import type { timeRecordType } from "@/type/table/TableType";
+
 export const userData = {
     id: "tc0116",
     department: "1",
@@ -7,8 +9,8 @@ export const userData = {
 };
 
 export const tableData = {
-    "2024/7": [
-        {
+    "2024/7": {
+        0: {
             scheduleArriveWorkTime: "",
             scheduleLeavingWorkTime: "",
             schedulePredictionWorkingTime: "",
@@ -23,13 +25,13 @@ export const tableData = {
             approval: "",
             overtimeWorkingTime: "",
         },
-        {
+        1: {
             actualArriveWorkTime: "9:00",
             actualLeavingWorkTime: "18:00",
         },
-    ],
-    "2024/8": [
-        {
+    },
+    "2024/8": {
+        0: {
             scheduleArriveWorkTime: "",
             scheduleLeavingWorkTime: "",
             schedulePredictionWorkingTime: "",
@@ -44,21 +46,21 @@ export const tableData = {
             approval: "",
             overtimeWorkingTime: "",
         },
-        {
+        1: {
             actualArriveWorkTime: "9:00",
             actualLeavingWorkTime: "18:00",
         },
-        {
+        5: {
             actualArriveWorkTime: "",
             actualLeavingWorkTime: "",
         },
-        {
-            actualArriveWorkTime: "",
-            actualLeavingWorkTime: "",
+        9: {
+            actualArriveWorkTime: "9:00",
+            actualLeavingWorkTime: "19:20",
         },
-        {
+        12: {
             actualArriveWorkTime: "9:00",
             actualLeavingWorkTime: "18:00",
         },
-    ],
+    },
 };

@@ -8,7 +8,7 @@ import { Tooltip } from "primereact/tooltip";
 import Provider from "@/components/Provider";
 import MainTopSection from "@/pages/table/MainTopSection";
 import mainStyle from "@/styles/table/main.module.css";
-import { rangeArray } from "@/Utils";
+import { rangeArray, convertToHalfWidth } from "@/Utils";
 import {
     tableCellMap,
     tableEditAvailableKey,
@@ -17,8 +17,11 @@ import {
     bodyCellClassName,
     bodyTemplate,
     createCellChild,
+    calcHoursDiff,
+    // calcHoursAdd,
+    reduceCalcHoursAdd,
 } from "@/utils/table/Utils";
-import type { timeRecordType, mainTableHeaderType } from "@/type/table/TableType";
+import type { timeRecordType, mainTableHeaderType, calcDataType } from "@/type/table/TableType";
 
 // test data
 import { userData as tempUserData, tableData as tempTableData } from "@/utils/table/TempData";
@@ -27,19 +30,21 @@ const App = () => {
     const [timeRecord, setTimeRecord] = useState<timeRecordType[]>([]);
     const [selectYear, setSelectYear] = useState<number>(new Date().getFullYear());
     const [selectMonth, setSelectMonth] = useState<number>(new Date().getMonth() + 1);
-    // const selectYear = useRef<Dropdown>(null);
-    // const selectMonth = useRef<Dropdown>(null);
-    // const selectYear = useRef<number>(0);
-    // const selectMonth = useRef<number>(0);
+    const [calcData, setCalcData] = useState<calcDataType>({});
 
     const eventAvailableCell = useRef<{
         [rowIndex: number]: Array<number>;
     }>({});
     const userData = useRef<typeof tempUserData>(tempUserData);
+    const userTimeRecordData = useRef<Record<string, Record<string, any>> | null>(null);
     const fixedArriveTime = useRef<string>("");
     const fixedLeavingTime = useRef<string>("");
     const fixedlunchTime = useRef<string>("");
-    // const totalPredictionWorkingTime = useRef<string>("0:00");
+    // const totalSchedulePredictionWorkingTime = useRef<string>();
+    // const totalActualWorkingTime = useRef<string>("");
+    // const totalNightWorkingTime = useRef<string>("");
+    // const totalPaidLeaveApplydate = useRef<string>("");
+    // const totalPaidLeaveApplyHour = useRef<string>("");
 
     const headerObj: mainTableHeaderType = [
         [
@@ -208,30 +213,6 @@ const App = () => {
             fixedlunchTime.current
         );
 
-        // const record = getInitTimeRecord(
-        //     // tempSelectYear,
-        //     // tempSelectMonth,
-        //     selectYear,
-        //     selectMonth,
-        //     // selectYear.current,
-        //     // selectMonth.current,
-        //     fixedArriveTime.current,
-        //     fixedLeavingTime.current,
-        //     fixedlunchTime.current
-        // );
-
-        // // edit利用可能セル
-        // for (const [index, recordValue] of Object.entries(record)) {
-        //     if (!isEmptyValueDay(recordValue.day)) {
-        //         eventAvailableCell.current[parseInt(index)] = [...rangeArray(1, Object.keys(record).length)]
-        //             .filter((_v, idx) => tableEditAvailableKey.indexOf(tableCellMap[idx + 1]) !== -1)
-        //             .map((v) => v - 1);
-        //     }
-        // }
-        // // console.log("work..?");
-        // // console.log(record);
-        // // console.log(selectYear);
-        // // console.log(selectMonth);
         // // setTimeout(() => {
         // //     setTimeRecord(record);
 
@@ -252,10 +233,16 @@ const App = () => {
                 fixedArriveTime: fixedArriveTime,
                 fixedLeavingTime: fixedLeavingTime,
                 fixedlunchTime: fixedlunchTime,
+                // totalSchedulePredictionWorkingTime: totalSchedulePredictionWorkingTime,
+                // totalActualWorkingTime: totalActualWorkingTime,
+                // totalNightWorkingTime: totalNightWorkingTime,
+                // totalPaidLeaveApplydate: totalPaidLeaveApplydate,
+                // totalPaidLeaveApplyHour: totalPaidLeaveApplyHour,
+                calcData: calcData,
             }}
         >
             <main id={mainStyle.main}>
-                <MainTopSection />
+                <MainTopSection key={`${selectYear}/${selectMonth}`} />
 
                 <section id={mainStyle["mainTableSection"]}>
                     {/* <DataTable
@@ -322,7 +309,7 @@ const App = () => {
                         // editMode="cell"
                         emptyMessage={"データ読み込み中..."}
                         cellSelection
-                        // selectionMode="single"
+                        selectionMode="single"
                         onCellSelect={cellSelectHandler}
                     >
                         <Column bodyClassName={bodyCellClassName} field="date" body={bodyTemplate} />
@@ -405,27 +392,61 @@ const App = () => {
         </Provider>
     );
 
-    function initSetTimeRecord(...param: Parameters<typeof getInitTimeRecord>) {
-        // const param = arguments as typeof P;
-        console.log(param);
-        // const useParam = ...param;
-        const record = getInitTimeRecord(...param);
+    function initSetTimeRecord(...param: Parameters<typeof getInitTimeRecord>): void {
+        const selectYear = param[0];
+        const selectMonth = param[1];
+        // const userTimeRecordData = getUserTimeRecord(selectYear, selectMonth);
+        const userTimeRecordData = getUserTimeRecord();
+        const searchTimeRecordKey = `${selectYear}/${selectMonth}`;
 
-        // console.log(record);
+        // default record
+        let record = getInitTimeRecord(...param);
 
-        // edit利用可能セル
-        // for (const [index, recordValue] of Object.entries(record)) {
-        //     if (!isEmptyValueDay(recordValue.day)) {
-        //         eventAvailableCell.current[parseInt(index)] = [...rangeArray(1, Object.keys(record).length)]
-        //             .filter((_v, idx) => tableEditAvailableKey.indexOf(tableCellMap[idx + 1]) !== -1)
-        //             .map((v) => v - 1);
-        //     }
-        // }
+        userTimeRecordData
+            .then((data) => {
+                // const jsonData = data.json();
 
-        setTimeRecord(record);
+                // data merge
+                if (searchTimeRecordKey in data) {
+                    for (const index of record.keys()) {
+                        if (data[searchTimeRecordKey]![index] && !isEmptyValueDay(record[index]["day"])) {
+                            record[index] = Object.assign(
+                                record[index],
+                                Object.fromEntries(
+                                    tableEditAvailableKey.map((v) => [
+                                        v,
+                                        data[searchTimeRecordKey]![index][v as keyof timeRecordType],
+                                    ])
+                                )
+                            );
+                        }
+                    }
+                }
+
+                // console.log(record);
+                // console.log(data["2024/7"]);
+            })
+            .catch((err) => {
+                console.error("get data err");
+                console.error(err);
+            })
+            .finally(() => {
+                setTotalCalcRecord(record);
+            });
     }
 
-    function cellSelectHandler(e: DataTableCellClickEvent<timeRecordType[]>) {
+    // async function getUserTimeRecord(selectYear: number, selectMonth: number) {
+    async function getUserTimeRecord(): Promise<Record<string, Record<string, any> | null>> {
+        const record = tempTableData;
+
+        if (!userTimeRecordData.current) {
+            userTimeRecordData.current = record;
+        }
+
+        return userTimeRecordData.current;
+    }
+
+    function cellSelectHandler(e: DataTableCellClickEvent<timeRecordType[]>): boolean | void {
         const target = e.originalEvent.target as HTMLElement;
         const parent = (target.tagName.toLowerCase() == "td" ? target : target.closest("td")) as HTMLElement;
         const availableCell = eventAvailableCell.current;
@@ -441,10 +462,21 @@ const App = () => {
 
         // input handle
         input.addEventListener("blur", inputEventHandler);
-        input.addEventListener("keydown", (e) => (e.key == "Enter" ? inputEventHandler(e) : false));
+        input.addEventListener("keydown", (e) => {
+            e.stopPropagation();
+
+            if (e.key == "Enter") {
+                inputEventHandler(e);
+            } else if (e.key == "Tab") {
+                // Tab key focus 除去しておく
+                const docActiveEle = document.activeElement as HTMLElement;
+
+                docActiveEle.blur();
+            }
+        });
 
         if (row in availableCell && availableCell[row].indexOf(cell) !== -1) {
-            target.appendChild(input);
+            parent.appendChild(input);
             input.focus();
         } else {
             return false;
@@ -452,7 +484,7 @@ const App = () => {
 
         function inputEventHandler(event: Event) {
             const inputTarget = event.currentTarget as HTMLInputElement;
-            const value = inputTarget.value;
+            const value = convertToHalfWidth(inputTarget.value);
 
             // cell
             const temp = document.createElement("div") as HTMLElement;
@@ -464,11 +496,71 @@ const App = () => {
 
             // save data
             timeRecord[row][selectField] = value;
-            setTimeRecord(timeRecord);
+            setTotalCalcRecord(timeRecord);
 
             // temp input remove
             input.remove();
+            parent.focus();
         }
+    }
+
+    function setTotalCalcRecord(record: timeRecordType[], setTimeRecordFlg: boolean = true): void | timeRecordType[] {
+        const prepareRecordData = record;
+
+        // edit利用可能セル
+        for (const [index, recordValue] of record.entries()) {
+            if (!isEmptyValueDay(recordValue.day)) {
+                eventAvailableCell.current[index] = [...rangeArray(1, Object.keys(record).length)]
+                    .filter((_v, idx) => tableEditAvailableKey.indexOf(tableCellMap[idx + 1]) !== -1)
+                    .map((v) => v - 1);
+            }
+
+            // 実働（h）計算
+            if (recordValue.actualArriveWorkTime && recordValue.actualLeavingWorkTime && recordValue.actualBreaktime) {
+                const tempActualWorkingTime = calcHoursDiff(
+                    recordValue.actualArriveWorkTime,
+                    recordValue.actualLeavingWorkTime,
+                    recordValue.actualBreaktime
+                );
+
+                prepareRecordData[index].actualWorkingTime = tempActualWorkingTime;
+
+                // Overtime（h）計算
+                if (recordValue.schedulePredictionWorkingTime) {
+                    const overtimeWorkingTime = calcHoursDiff(
+                        recordValue.schedulePredictionWorkingTime,
+                        tempActualWorkingTime
+                    );
+
+                    prepareRecordData[index].overtimeWorkingTime = overtimeWorkingTime;
+                }
+            }
+        }
+
+        // calcData 更新
+        const prepareSetCalcData = Object.fromEntries(
+            [
+                "schedulePredictionWorkingTime",
+                "actualWorkingTime",
+                "nightWorkingTime",
+                "paidLeaveApplydate",
+                "paidLeaveApplyHour",
+            ].map((calcKeyName) => [
+                "total" + calcKeyName.charAt(0).toUpperCase() + calcKeyName.slice(1),
+                prepareRecordData.reduce(
+                    (accumulator, currentValue) => reduceCalcHoursAdd(accumulator, currentValue, calcKeyName),
+                    "0:00"
+                ),
+            ])
+        );
+
+        setCalcData(prepareSetCalcData);
+
+        if (setTimeRecordFlg) {
+            setTimeRecord(prepareRecordData);
+        }
+
+        return prepareRecordData;
     }
 };
 
