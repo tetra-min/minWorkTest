@@ -310,6 +310,7 @@ const App = () => {
                         emptyMessage={"データ読み込み中..."}
                         cellSelection
                         selectionMode="single"
+                        // selectionMode="multiple"
                         onCellSelect={cellSelectHandler}
                     >
                         <Column bodyClassName={bodyCellClassName} field="date" body={bodyTemplate} />

@@ -21,7 +21,25 @@ import { createElement } from "react";
 15 :overtime-実績
 */
 
-export let year = "2024";
+export const tableCellKeyName: {
+    [key: string]: string;
+} = {
+    date: "日",
+    day: "曜日",
+    scheduleArriveWorkTime: "出社",
+    scheduleLeavingWorkTime: "退社",
+    schedulePredictionWorkingTime: "予働(h)",
+    actualArriveWorkTime: "出社",
+    actualLeavingWorkTime: "退社",
+    actualBreaktime: "休憩時間",
+    actualWorkingTime: "実働(h)",
+    nightWorkingTime: "深夜実績 実働(h)",
+    paidLeaveApplydate: "日有給申請",
+    paidLeaveApplyHour: "時間有給申請",
+    AnyApplicationKind: "適用",
+    approval: "承認",
+    overtimeWorkingTime: "実績",
+};
 
 export const tableCellMap: {
     [key: string]: string;
@@ -215,7 +233,7 @@ export function reduceCalcHoursAdd(accumulator: string, currentValue: timeRecord
     const key = useKey as keyof timeRecordType;
 
     if (currentValue[key]) {
-        return calcHoursAdd(accumulator,(currentValue[key] as string));
+        return calcHoursAdd(accumulator, currentValue[key] as string);
     } else {
         return accumulator;
     }

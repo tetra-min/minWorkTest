@@ -19,6 +19,33 @@
 .mainTopInner .inputArea {
     display: flex;
 }
+.mainTopInner .inputArea .dropdownBox {
+    /* height: ; */
+    height: 32px;
+    align-items: center;
+}
+.mainTopInner .inputArea .dropdownBox + span {
+    margin: 0 6px;
+}
+.mainTopInner .inputArea .dropdownBox > [class~="p-dropdown-label"] {
+    padding: 0 8px;
+    font-size: 0.95rem;
+}
+.mainTopInner .inputArea .dropdownBox [class~="p-icon"] {
+    width: 12px;
+}
+.dropDownPanel {
+    font-size: 0.95rem;
+}
+.dropDownPanel [class~="p-dropdown-items-wrapper"] {
+    scrollbar-width: none;
+}
+.dropDownPanel [class~="p-dropdown-items-wrapper"]::-webkit-scrollbar {
+    display: none;
+}
+.dropDownPanel ul[class~="p-dropdown-items"] > [class~="p-dropdown-item"] {
+    padding: 8px;
+}
 .mainTopInner .timeDisplayArea {
     margin-top: 10px;
     display: flex;

@@ -7,7 +7,7 @@ import { Column } from "primereact/column";
 import { ColumnGroup } from "primereact/columngroup";
 import { Row } from "primereact/row";
 import { rangeArray } from "@/Utils";
-// import { getTimeRecord } from "@/utils/table/Utils";
+// import { tableCellKeyName } from "@/utils/table/Utils";
 import type { providerDataType } from "@/type/table/TableType";
 
 function View() {
@@ -49,15 +49,19 @@ function View() {
                                 options={selectYearOption}
                                 optionLabel="name"
                                 onChange={selectYearChange}
+                                className={mainStyle["dropdownBox"]}
+                                panelClassName={mainStyle["dropDownPanel"]}
                             ></Dropdown>
-                            年
+                            <span>年</span>
                             <Dropdown
                                 value={selectMonth}
                                 options={selectMonthOption}
                                 optionLabel="name"
                                 onChange={selectMonthChange}
+                                className={mainStyle["dropdownBox"]}
+                                panelClassName={mainStyle["dropDownPanel"]}
                             ></Dropdown>
-                            月
+                            <span>月</span>
                         </div>
                     </div>
                     <div className={mainStyle["timeDisplayArea"]}>
