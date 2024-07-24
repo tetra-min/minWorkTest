@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { forwardRef, useContext, useState, useImperativeHandle } from "react";
 import Context from "@/components/Context";
 import mainStyle from "@/styles/table/main.module.css";
 import { DataTable } from "primereact/datatable";
@@ -8,10 +8,14 @@ import { ColumnGroup } from "primereact/columngroup";
 import { Row } from "primereact/row";
 import { rangeArray } from "@/Utils";
 // import { tableCellKeyName } from "@/utils/table/Utils";
-import type { providerDataType } from "@/type/table/TableType";
+import type { providerDataType, calcDataType, mainTopSectionHandler } from "@/type/table/TableType";
 
-function View() {
+const View = forwardRef<mainTopSectionHandler>((_props, ref) => {
     const data = useContext(Context) as providerDataType;
+
+    const [calcData, setCalcData] = useState<calcDataType>({});
+
+    // console.log("top!");
 
     const {
         selectYear,
@@ -27,8 +31,16 @@ function View() {
         // totalNightWorkingTime,
         // totalPaidLeaveApplydate,
         // totalPaidLeaveApplyHour,
-        calcData,
+        // calcData,
     } = data;
+
+    // let calcData = data["calcData"];
+
+    useImperativeHandle(ref, () => {
+        return {
+            updateCalcData,
+        };
+    });
 
     const selectYearOption = rangeArray(2009, 2024).map((v) => {
         return { name: v, value: v };
@@ -171,6 +183,10 @@ function View() {
 
         // setTimeRecord(record);
     }
-}
+
+    function updateCalcData(updateData: calcDataType): void {
+        setCalcData(updateData);
+    }
+});
 
 export default View;

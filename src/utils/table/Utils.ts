@@ -61,6 +61,10 @@ export const tableCellMap: {
     15: "overtimeWorkingTime",
 };
 
+export const reverseTableCellMap: {
+    [key: string]: string;
+} = Object.fromEntries(Object.entries(tableCellMap).map(([k, v]) => [v, k]));
+
 export const tableEditAvailableKey = [
     "actualArriveWorkTime",
     "actualLeavingWorkTime",

@@ -51,7 +51,7 @@ export type providerDataType = {
     selectMonth: number;
     setSelectYear: Dispatch<SetStateAction<number>>;
     setSelectMonth: Dispatch<SetStateAction<number>>;
-    setTimeRecord: Dispatch<SetStateAction<timeRecordType[]>>;
+    // setTimeRecord: Dispatch<SetStateAction<timeRecordType[]>>;
     // selectYear: MutableRefObject<Dropdown>;
     // selectMonth: MutableRefObject<Dropdown>;
     fixedArriveTime: MutableRefObject<string>;
@@ -71,4 +71,8 @@ export type calcDataType = {
     totalNightWorkingTime?: string;
     totalPaidLeaveApplydate?: string;
     totalPaidLeaveApplyHour?: string;
+};
+
+export type mainTopSectionHandler = {
+    updateCalcData: (data: calcDataType) => void;
 };

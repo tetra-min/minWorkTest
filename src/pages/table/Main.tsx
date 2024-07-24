@@ -4,13 +4,13 @@ import { DataTable, DataTableCellClickEvent } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ColumnGroup } from "primereact/columngroup";
 import { Row } from "primereact/row";
-import { Tooltip } from "primereact/tooltip";
 import Provider from "@/components/Provider";
 import MainTopSection from "@/pages/table/MainTopSection";
 import mainStyle from "@/styles/table/main.module.css";
 import { rangeArray, convertToHalfWidth } from "@/Utils";
 import {
     tableCellMap,
+    reverseTableCellMap,
     tableEditAvailableKey,
     getInitTimeRecord,
     isEmptyValueDay,
@@ -21,16 +21,18 @@ import {
     // calcHoursAdd,
     reduceCalcHoursAdd,
 } from "@/utils/table/Utils";
-import type { timeRecordType, mainTableHeaderType, calcDataType } from "@/type/table/TableType";
+import type { timeRecordType, mainTableHeaderType, mainTopSectionHandler } from "@/type/table/TableType";
 
 // test data
 import { userData as tempUserData, tableData as tempTableData } from "@/utils/table/TempData";
 
 const App = () => {
+    // console.log("app!");
     const [timeRecord, setTimeRecord] = useState<timeRecordType[]>([]);
     const [selectYear, setSelectYear] = useState<number>(new Date().getFullYear());
     const [selectMonth, setSelectMonth] = useState<number>(new Date().getMonth() + 1);
-    const [calcData, setCalcData] = useState<calcDataType>({});
+    // const [calcData, setCalcData] = useState<calcDataType>({});
+    // let calcData: calcDataType = {};
 
     const eventAvailableCell = useRef<{
         [rowIndex: number]: Array<number>;
@@ -40,6 +42,8 @@ const App = () => {
     const fixedArriveTime = useRef<string>("");
     const fixedLeavingTime = useRef<string>("");
     const fixedlunchTime = useRef<string>("");
+    const mainTableRef = useRef<DataTable<timeRecordType[]>>(null);
+    const mainTopSectionRef = useRef<mainTopSectionHandler>(null);
     // const totalSchedulePredictionWorkingTime = useRef<string>();
     // const totalActualWorkingTime = useRef<string>("");
     // const totalNightWorkingTime = useRef<string>("");
@@ -225,7 +229,7 @@ const App = () => {
     return (
         <Provider
             {...{
-                setTimeRecord: setTimeRecord,
+                // setTimeRecord: setTimeRecord,
                 selectYear: selectYear,
                 setSelectYear: setSelectYear,
                 selectMonth: selectMonth,
@@ -238,11 +242,11 @@ const App = () => {
                 // totalNightWorkingTime: totalNightWorkingTime,
                 // totalPaidLeaveApplydate: totalPaidLeaveApplydate,
                 // totalPaidLeaveApplyHour: totalPaidLeaveApplyHour,
-                calcData: calcData,
+                // calcData: calcData,
             }}
         >
             <main id={mainStyle.main}>
-                <MainTopSection key={`${selectYear}/${selectMonth}`} />
+                <MainTopSection ref={mainTopSectionRef} key={`${selectYear}/${selectMonth}`} />
 
                 <section id={mainStyle["mainTableSection"]}>
                     {/* <DataTable
@@ -299,6 +303,7 @@ const App = () => {
                         />
                     </DataTable> */}
                     <DataTable
+                        ref={mainTableRef}
                         key={`${selectYear}/${selectMonth}`}
                         id={mainStyle["mainDataTable"]}
                         value={timeRecord}
@@ -388,8 +393,6 @@ const App = () => {
                     </DataTable>
                 </section>
             </main>
-
-            <Tooltip target={mainStyle["dataTableBodyCellTextEllipsis"]} />
         </Provider>
     );
 
@@ -401,7 +404,7 @@ const App = () => {
         const searchTimeRecordKey = `${selectYear}/${selectMonth}`;
 
         // default record
-        let record = getInitTimeRecord(...param);
+        const record = getInitTimeRecord(...param);
 
         userTimeRecordData
             .then((data) => {
@@ -432,7 +435,9 @@ const App = () => {
                 console.error(err);
             })
             .finally(() => {
-                setTotalCalcRecord(record);
+                const prepareRecord = setTotalCalcRecord(record, false) as timeRecordType[];
+
+                setTimeRecord(prepareRecord);
             });
     }
 
@@ -454,6 +459,7 @@ const App = () => {
         const row = e.rowIndex;
         const cell = e.cellIndex;
         const selectField = e["field"] as keyof timeRecordType;
+        const rowElement = parent.closest("tr") as HTMLTableRowElement;
 
         // temp input
         const input = document.createElement("input");
@@ -485,6 +491,7 @@ const App = () => {
 
         function inputEventHandler(event: Event) {
             const inputTarget = event.currentTarget as HTMLInputElement;
+            const rowCells = rowElement.cells;
             const value = convertToHalfWidth(inputTarget.value);
 
             // cell
@@ -497,7 +504,21 @@ const App = () => {
 
             // save data
             timeRecord[row][selectField] = value;
-            setTotalCalcRecord(timeRecord);
+
+            const prepareUpdateRecord = setTotalCalcRecord(timeRecord);
+
+            for (const [field, value] of Object.entries(prepareUpdateRecord[row])) {
+                if (reverseTableCellMap[field]) {
+                    const prepareCell = parseInt(reverseTableCellMap[field]) - 1;
+                    const textBlock = rowCells[prepareCell].firstChild as HTMLElement;
+
+                    textBlock.innerText = value as string;
+                }
+            }
+
+            timeRecord[row] = prepareUpdateRecord[row];
+            // setTimeRecord(prepareUpdateRecord);
+            // console.log(timeRecord);
 
             // temp input remove
             input.remove();
@@ -505,13 +526,15 @@ const App = () => {
         }
     }
 
-    function setTotalCalcRecord(record: timeRecordType[], setTimeRecordFlg: boolean = true): void | timeRecordType[] {
-        const prepareRecordData = record;
+    function setTotalCalcRecord(record: timeRecordType[], setTimeRecordFlg: boolean = false): timeRecordType[] {
+        // const prepareRecordData = record;
+        const prepareRecordData = [...record];
+        const tempRecord = [...record];
 
         // edit利用可能セル
-        for (const [index, recordValue] of record.entries()) {
+        for (const [index, recordValue] of tempRecord.entries()) {
             if (!isEmptyValueDay(recordValue.day)) {
-                eventAvailableCell.current[index] = [...rangeArray(1, Object.keys(record).length)]
+                eventAvailableCell.current[index] = [...rangeArray(1, Object.keys(tempRecord).length)]
                     .filter((_v, idx) => tableEditAvailableKey.indexOf(tableCellMap[idx + 1]) !== -1)
                     .map((v) => v - 1);
             }
@@ -555,7 +578,11 @@ const App = () => {
             ])
         );
 
-        setCalcData(prepareSetCalcData);
+        // calcData = prepareSetCalcData;
+        // setCalcData(prepareSetCalcData);
+        if (mainTopSectionRef.current) {
+            mainTopSectionRef.current.updateCalcData(prepareSetCalcData);
+        }
 
         if (setTimeRecordFlg) {
             setTimeRecord(prepareRecordData);
