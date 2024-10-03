@@ -8,6 +8,7 @@ import { ColumnGroup } from "primereact/columngroup";
 import { Row } from "primereact/row";
 import { rangeArray } from "@/Utils";
 // import { tableCellKeyName } from "@/utils/table/Utils";
+
 import type { providerDataType, calcDataType, mainTopSectionHandler } from "@/type/table/TableType";
 
 const View = forwardRef<mainTopSectionHandler>((_props, ref) => {

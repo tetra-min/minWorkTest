@@ -7,7 +7,7 @@ import { Row } from "primereact/row";
 import Provider from "@/components/Provider";
 import MainTopSection from "@/pages/table/MainTopSection";
 import mainStyle from "@/styles/table/main.module.css";
-import { rangeArray, convertToHalfWidth } from "@/Utils";
+import { rangeArray, convertToHalfWidth, getHolidays } from "@/Utils";
 import {
     tableCellMap,
     reverseTableCellMap,
@@ -21,13 +21,18 @@ import {
     // calcHoursAdd,
     reduceCalcHoursAdd,
 } from "@/utils/table/Utils";
+
 import type { timeRecordType, mainTableHeaderType, mainTopSectionHandler } from "@/type/table/TableType";
 
 // test data
 import { userData as tempUserData, tableData as tempTableData } from "@/utils/table/TempData";
 
-const App = () => {
-    // console.log("app!");
+const View = () => {
+    getHolidays("2024-1-1", "2024/12/31").then((res) => {
+        console.log(res.items);
+    });
+    // console.log(holidays);
+
     const [timeRecord, setTimeRecord] = useState<timeRecordType[]>([]);
     const [selectYear, setSelectYear] = useState<number>(new Date().getFullYear());
     const [selectMonth, setSelectMonth] = useState<number>(new Date().getMonth() + 1);
@@ -49,6 +54,36 @@ const App = () => {
     // const totalNightWorkingTime = useRef<string>("");
     // const totalPaidLeaveApplydate = useRef<string>("");
     // const totalPaidLeaveApplyHour = useRef<string>("");
+
+    useEffect(() => {
+        // ref
+        eventAvailableCell.current = {};
+        fixedArriveTime.current = userData.current.fixedArriveTime;
+        fixedLeavingTime.current = userData.current.fixedLeavingTime;
+        fixedlunchTime.current = userData.current.fixedlunchTime;
+
+        // const tempSelectYear = 2024;
+        // const tempSelectMonth = 7;
+
+        // setSelectYear(tempSelectYear);
+        // setSelectMonth(tempSelectMonth);
+
+        initSetTimeRecord(
+            selectYear,
+            selectMonth,
+            fixedArriveTime.current,
+            fixedLeavingTime.current,
+            fixedlunchTime.current
+        );
+
+        // // setTimeout(() => {
+        // //     setTimeRecord(record);
+
+        // //     // setLoading(false);
+        // // }, 1000);
+
+        // setTimeRecord(record);
+    }, [selectYear, selectMonth]);
 
     const headerObj: mainTableHeaderType = [
         [
@@ -195,206 +230,6 @@ const App = () => {
     //         </Row>
     //     </ColumnGroup>
     // );
-
-    useEffect(() => {
-        // ref
-        eventAvailableCell.current = {};
-        fixedArriveTime.current = userData.current.fixedArriveTime;
-        fixedLeavingTime.current = userData.current.fixedLeavingTime;
-        fixedlunchTime.current = userData.current.fixedlunchTime;
-
-        // const tempSelectYear = 2024;
-        // const tempSelectMonth = 7;
-
-        // setSelectYear(tempSelectYear);
-        // setSelectMonth(tempSelectMonth);
-
-        initSetTimeRecord(
-            selectYear,
-            selectMonth,
-            fixedArriveTime.current,
-            fixedLeavingTime.current,
-            fixedlunchTime.current
-        );
-
-        // // setTimeout(() => {
-        // //     setTimeRecord(record);
-
-        // //     // setLoading(false);
-        // // }, 1000);
-
-        // setTimeRecord(record);
-    }, [selectYear, selectMonth]);
-
-    return (
-        <Provider
-            {...{
-                // setTimeRecord: setTimeRecord,
-                selectYear: selectYear,
-                setSelectYear: setSelectYear,
-                selectMonth: selectMonth,
-                setSelectMonth: setSelectMonth,
-                fixedArriveTime: fixedArriveTime,
-                fixedLeavingTime: fixedLeavingTime,
-                fixedlunchTime: fixedlunchTime,
-                // totalSchedulePredictionWorkingTime: totalSchedulePredictionWorkingTime,
-                // totalActualWorkingTime: totalActualWorkingTime,
-                // totalNightWorkingTime: totalNightWorkingTime,
-                // totalPaidLeaveApplydate: totalPaidLeaveApplydate,
-                // totalPaidLeaveApplyHour: totalPaidLeaveApplyHour,
-                // calcData: calcData,
-            }}
-        >
-            <main id={mainStyle.main}>
-                <MainTopSection ref={mainTopSectionRef} key={`${selectYear}/${selectMonth}`} />
-
-                <section id={mainStyle["mainTableSection"]}>
-                    {/* <DataTable
-                        id={mainStyle["mainDataTable"]}
-                        value={timeRecord}
-                        headerColumnGroup={headerGroup}
-                        // footerColumnGroup={footerGroup}
-                        // lazy={true}
-                        // loading={loading}
-                        // editMode="cell"
-                        emptyMessage={"データ読み込み中..."}
-                        cellSelection
-                        // selectionMode="single"
-                        onCellSelect={cellSelectHandler}
-                    >
-                        <Column bodyClassName={bodyCellClassName} field="1" />
-                        <Column bodyClassName={bodyCellClassName} field="2" />
-                        <Column bodyClassName={bodyCellClassName} field="3" bodyStyle={{ minWidth: "80px" }} />
-                        <Column bodyClassName={bodyCellClassName} field="4" bodyStyle={{ minWidth: "80px" }} />
-                        <Column
-                            bodyClassName={(content) => {
-                                return bodyCellClassName(content) + ` ${mainStyle["dataTableBodyCellBackground"]}`;
-                            }}
-                            field="5"
-                            bodyStyle={{ minWidth: "80px" }}
-                        />
-                        <Column
-                            bodyClassName={bodyCellClassName}
-                            field="6"
-                            bodyStyle={{ minWidth: "80px" }}
-                            // editor={(options: ColumnEditorOptions) => cellEditor(options)}
-                            // onCellEditComplete={onCellEditComplete}
-                        />
-                        <Column bodyClassName={bodyCellClassName} field="7" bodyStyle={{ minWidth: "80px" }} />
-                        <Column bodyClassName={bodyCellClassName} field="8" bodyStyle={{ minWidth: "80px" }} />
-                        <Column
-                            bodyClassName={(content) => {
-                                return bodyCellClassName(content) + ` ${mainStyle["dataTableBodyCellBackground"]}`;
-                            }}
-                            field="9"
-                            bodyStyle={{ minWidth: "80px" }}
-                        />
-                        <Column bodyClassName={bodyCellClassName} field="10" />
-                        <Column bodyClassName={bodyCellClassName} field="11" />
-                        <Column bodyClassName={bodyCellClassName} field="12" />
-                        <Column bodyClassName={bodyCellClassName} field="13" bodyStyle={{ minWidth: "80px" }} />
-                        <Column bodyClassName={bodyCellClassName} field="14" />
-                        <Column
-                            bodyClassName={(content) => {
-                                return bodyCellClassName(content) + ` ${mainStyle["dataTableBodyCellBackground"]}`;
-                            }}
-                            field="15"
-                            style={{ minWidth: "80px" }}
-                        />
-                    </DataTable> */}
-                    <DataTable
-                        ref={mainTableRef}
-                        key={`${selectYear}/${selectMonth}`}
-                        id={mainStyle["mainDataTable"]}
-                        value={timeRecord}
-                        headerColumnGroup={headerGroup}
-                        // footerColumnGroup={footerGroup}
-                        // lazy={true}
-                        // loading={loading}
-                        // editMode="cell"
-                        emptyMessage={"データ読み込み中..."}
-                        cellSelection
-                        selectionMode="single"
-                        // selectionMode="multiple"
-                        onCellSelect={cellSelectHandler}
-                    >
-                        <Column bodyClassName={bodyCellClassName} field="date" body={bodyTemplate} />
-                        <Column bodyClassName={bodyCellClassName} field="day" body={bodyTemplate} />
-                        <Column
-                            bodyClassName={bodyCellClassName}
-                            field="scheduleArriveWorkTime"
-                            bodyStyle={{ minWidth: "80px" }}
-                            body={bodyTemplate}
-                        />
-                        <Column
-                            bodyClassName={bodyCellClassName}
-                            field="scheduleLeavingWorkTime"
-                            bodyStyle={{ minWidth: "80px" }}
-                            body={bodyTemplate}
-                        />
-                        <Column
-                            bodyClassName={(content, options) => {
-                                return (
-                                    bodyCellClassName(content, options) + ` ${mainStyle["dataTableBodyCellBackground"]}`
-                                );
-                            }}
-                            field="schedulePredictionWorkingTime"
-                            bodyStyle={{ minWidth: "80px" }}
-                            body={bodyTemplate}
-                        />
-                        <Column
-                            bodyClassName={bodyCellClassName}
-                            field="actualArriveWorkTime"
-                            bodyStyle={{ minWidth: "80px" }}
-                            body={bodyTemplate}
-                        />
-                        <Column
-                            bodyClassName={bodyCellClassName}
-                            field="actualLeavingWorkTime"
-                            bodyStyle={{ minWidth: "80px" }}
-                            body={bodyTemplate}
-                        />
-                        <Column
-                            bodyClassName={bodyCellClassName}
-                            field="actualBreaktime"
-                            bodyStyle={{ minWidth: "80px" }}
-                            body={bodyTemplate}
-                        />
-                        <Column
-                            bodyClassName={(content, options) => {
-                                return (
-                                    bodyCellClassName(content, options) + ` ${mainStyle["dataTableBodyCellBackground"]}`
-                                );
-                            }}
-                            field="actualWorkingTime"
-                            bodyStyle={{ minWidth: "80px" }}
-                            body={bodyTemplate}
-                        />
-                        <Column bodyClassName={bodyCellClassName} field="nightWorkingTime" body={bodyTemplate} />
-                        <Column bodyClassName={bodyCellClassName} field="paidLeaveApplydate" body={bodyTemplate} />
-                        <Column bodyClassName={bodyCellClassName} field="paidLeaveApplyHour" body={bodyTemplate} />
-                        <Column
-                            bodyClassName={bodyCellClassName}
-                            field="AnyApplicationKind"
-                            bodyStyle={{ minWidth: "80px" }}
-                            body={bodyTemplate}
-                        />
-                        <Column bodyClassName={bodyCellClassName} field="approval" body={bodyTemplate} />
-                        <Column
-                            bodyClassName={(content, options) => {
-                                return (
-                                    bodyCellClassName(content, options) + ` ${mainStyle["dataTableBodyCellBackground"]}`
-                                );
-                            }}
-                            field="overtimeWorkingTime"
-                            style={{ minWidth: "80px" }}
-                            body={bodyTemplate}
-                        />
-                    </DataTable>
-                </section>
-            </main>
-        </Provider>
-    );
 
     function initSetTimeRecord(...param: Parameters<typeof getInitTimeRecord>): void {
         const selectYear = param[0];
@@ -590,6 +425,176 @@ const App = () => {
 
         return prepareRecordData;
     }
+
+    return (
+        <Provider
+            {...{
+                // setTimeRecord: setTimeRecord,
+                selectYear: selectYear,
+                setSelectYear: setSelectYear,
+                selectMonth: selectMonth,
+                setSelectMonth: setSelectMonth,
+                fixedArriveTime: fixedArriveTime,
+                fixedLeavingTime: fixedLeavingTime,
+                fixedlunchTime: fixedlunchTime,
+                // totalSchedulePredictionWorkingTime: totalSchedulePredictionWorkingTime,
+                // totalActualWorkingTime: totalActualWorkingTime,
+                // totalNightWorkingTime: totalNightWorkingTime,
+                // totalPaidLeaveApplydate: totalPaidLeaveApplydate,
+                // totalPaidLeaveApplyHour: totalPaidLeaveApplyHour,
+                // calcData: calcData,
+            }}
+        >
+            <main id={mainStyle.main}>
+                <MainTopSection ref={mainTopSectionRef} key={`${selectYear}/${selectMonth}`} />
+
+                <section id={mainStyle["mainTableSection"]}>
+                    {/* <DataTable
+                        id={mainStyle["mainDataTable"]}
+                        value={timeRecord}
+                        headerColumnGroup={headerGroup}
+                        // footerColumnGroup={footerGroup}
+                        // lazy={true}
+                        // loading={loading}
+                        // editMode="cell"
+                        emptyMessage={"データ読み込み中..."}
+                        cellSelection
+                        // selectionMode="single"
+                        onCellSelect={cellSelectHandler}
+                    >
+                        <Column bodyClassName={bodyCellClassName} field="1" />
+                        <Column bodyClassName={bodyCellClassName} field="2" />
+                        <Column bodyClassName={bodyCellClassName} field="3" bodyStyle={{ minWidth: "80px" }} />
+                        <Column bodyClassName={bodyCellClassName} field="4" bodyStyle={{ minWidth: "80px" }} />
+                        <Column
+                            bodyClassName={(content) => {
+                                return bodyCellClassName(content) + ` ${mainStyle["dataTableBodyCellBackground"]}`;
+                            }}
+                            field="5"
+                            bodyStyle={{ minWidth: "80px" }}
+                        />
+                        <Column
+                            bodyClassName={bodyCellClassName}
+                            field="6"
+                            bodyStyle={{ minWidth: "80px" }}
+                            // editor={(options: ColumnEditorOptions) => cellEditor(options)}
+                            // onCellEditComplete={onCellEditComplete}
+                        />
+                        <Column bodyClassName={bodyCellClassName} field="7" bodyStyle={{ minWidth: "80px" }} />
+                        <Column bodyClassName={bodyCellClassName} field="8" bodyStyle={{ minWidth: "80px" }} />
+                        <Column
+                            bodyClassName={(content) => {
+                                return bodyCellClassName(content) + ` ${mainStyle["dataTableBodyCellBackground"]}`;
+                            }}
+                            field="9"
+                            bodyStyle={{ minWidth: "80px" }}
+                        />
+                        <Column bodyClassName={bodyCellClassName} field="10" />
+                        <Column bodyClassName={bodyCellClassName} field="11" />
+                        <Column bodyClassName={bodyCellClassName} field="12" />
+                        <Column bodyClassName={bodyCellClassName} field="13" bodyStyle={{ minWidth: "80px" }} />
+                        <Column bodyClassName={bodyCellClassName} field="14" />
+                        <Column
+                            bodyClassName={(content) => {
+                                return bodyCellClassName(content) + ` ${mainStyle["dataTableBodyCellBackground"]}`;
+                            }}
+                            field="15"
+                            style={{ minWidth: "80px" }}
+                        />
+                    </DataTable> */}
+                    <DataTable
+                        ref={mainTableRef}
+                        key={`${selectYear}/${selectMonth}`}
+                        id={mainStyle["mainDataTable"]}
+                        value={timeRecord}
+                        headerColumnGroup={headerGroup}
+                        // footerColumnGroup={footerGroup}
+                        // lazy={true}
+                        // loading={loading}
+                        // editMode="cell"
+                        emptyMessage={"データ読み込み中..."}
+                        cellSelection
+                        selectionMode="single"
+                        // selectionMode="multiple"
+                        onCellSelect={cellSelectHandler}
+                    >
+                        <Column bodyClassName={bodyCellClassName} field="date" body={bodyTemplate} />
+                        <Column bodyClassName={bodyCellClassName} field="day" body={bodyTemplate} />
+                        <Column
+                            bodyClassName={bodyCellClassName}
+                            field="scheduleArriveWorkTime"
+                            bodyStyle={{ minWidth: "80px" }}
+                            body={bodyTemplate}
+                        />
+                        <Column
+                            bodyClassName={bodyCellClassName}
+                            field="scheduleLeavingWorkTime"
+                            bodyStyle={{ minWidth: "80px" }}
+                            body={bodyTemplate}
+                        />
+                        <Column
+                            bodyClassName={(content, options) => {
+                                return (
+                                    bodyCellClassName(content, options) + ` ${mainStyle["dataTableBodyCellBackground"]}`
+                                );
+                            }}
+                            field="schedulePredictionWorkingTime"
+                            bodyStyle={{ minWidth: "80px" }}
+                            body={bodyTemplate}
+                        />
+                        <Column
+                            bodyClassName={bodyCellClassName}
+                            field="actualArriveWorkTime"
+                            bodyStyle={{ minWidth: "80px" }}
+                            body={bodyTemplate}
+                        />
+                        <Column
+                            bodyClassName={bodyCellClassName}
+                            field="actualLeavingWorkTime"
+                            bodyStyle={{ minWidth: "80px" }}
+                            body={bodyTemplate}
+                        />
+                        <Column
+                            bodyClassName={bodyCellClassName}
+                            field="actualBreaktime"
+                            bodyStyle={{ minWidth: "80px" }}
+                            body={bodyTemplate}
+                        />
+                        <Column
+                            bodyClassName={(content, options) => {
+                                return (
+                                    bodyCellClassName(content, options) + ` ${mainStyle["dataTableBodyCellBackground"]}`
+                                );
+                            }}
+                            field="actualWorkingTime"
+                            bodyStyle={{ minWidth: "80px" }}
+                            body={bodyTemplate}
+                        />
+                        <Column bodyClassName={bodyCellClassName} field="nightWorkingTime" body={bodyTemplate} />
+                        <Column bodyClassName={bodyCellClassName} field="paidLeaveApplydate" body={bodyTemplate} />
+                        <Column bodyClassName={bodyCellClassName} field="paidLeaveApplyHour" body={bodyTemplate} />
+                        <Column
+                            bodyClassName={bodyCellClassName}
+                            field="AnyApplicationKind"
+                            bodyStyle={{ minWidth: "80px" }}
+                            body={bodyTemplate}
+                        />
+                        <Column bodyClassName={bodyCellClassName} field="approval" body={bodyTemplate} />
+                        <Column
+                            bodyClassName={(content, options) => {
+                                return (
+                                    bodyCellClassName(content, options) + ` ${mainStyle["dataTableBodyCellBackground"]}`
+                                );
+                            }}
+                            field="overtimeWorkingTime"
+                            style={{ minWidth: "80px" }}
+                            body={bodyTemplate}
+                        />
+                    </DataTable>
+                </section>
+            </main>
+        </Provider>
+    );
 };
 
-export default App;
+export default View;

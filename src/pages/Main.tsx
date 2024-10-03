@@ -1,11 +1,16 @@
-// import { useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 // import reactLogo from "@/assets/react.svg";
 // import viteLogo from "/vite.svg";
+import { request } from "@/utils/Api";
 import inlineStyle from "@/styles/main.css?inline";
 
 function App() {
-    // const [count, setCount] = useState(0);
+    useEffect(() => {
+        console.log("effect!");
+
+        request();
+    });
 
     return (
         <>
