@@ -1,5 +1,5 @@
 import mainStyle from "@/styles/table/main.module.css";
-import type { timeRecordType } from "@/type/table/TableType";
+import type { timeRecordType, holidayType } from "@/type/table/TableType";
 import { ColumnBodyOptions } from "primereact/column";
 import { createElement } from "react";
 
@@ -80,7 +80,8 @@ export function getInitTimeRecord(
     currentMonth: number,
     fixedArriveTime: string,
     fixedLeavingTime: string,
-    fixedlunchTime: string
+    fixedlunchTime: string,
+    holiday: holidayType = {}
 ): timeRecordType[] {
     const year = currentYear;
     const month = currentMonth;
@@ -94,7 +95,8 @@ export function getInitTimeRecord(
     const resultTimeRecord = [];
 
     for (let i = 1; i <= lastDate; i++) {
-        const tempDate = `${year}/${month}/${i}`;
+        const padDate = i.toString().padStart(2, "0");
+        const tempDate = `${year}/${month}/${padDate}`;
         const dayStr = getDayString(tempDate);
 
         const temp = {
@@ -115,8 +117,8 @@ export function getInitTimeRecord(
             overtimeWorkingTime: "",
         };
 
-        // 土, 日
-        if (isEmptyValueDay(dayStr)) {
+        // 土, 日, 祝日
+        if (isEmptyValueDay(dayStr) || (holiday[year] && tempDate in holiday[year])) {
             temp.scheduleArriveWorkTime = "";
             temp.scheduleLeavingWorkTime = "";
             temp.schedulePredictionWorkingTime = "";
@@ -130,6 +132,11 @@ export function getInitTimeRecord(
             temp.AnyApplicationKind = "";
             temp.approval = "";
             temp.overtimeWorkingTime = "";
+
+            if (holiday[year] && tempDate in holiday[year]) {
+                temp.day += "(祝)";
+                temp.AnyApplicationKind = holiday[year][tempDate];
+            }
         }
 
         // const temp = {
@@ -174,7 +181,7 @@ export function getInitTimeRecord(
 }
 
 export function isEmptyValueDay(day: string) {
-    return ["土", "日"].indexOf(day) !== -1;
+    return ["土", "日"].indexOf(day) !== -1 || day.indexOf("(祝)") !== -1;
 }
 
 // export function isEmptyValueDay(date: string) {
@@ -245,7 +252,7 @@ export function reduceCalcHoursAdd(accumulator: string, currentValue: timeRecord
 
 export function bodyCellClassName(content: any, options: ColumnBodyOptions) {
     const field = options.field;
-    let name = "" || `${mainStyle["dataTableCellPadding"]} ${mainStyle["dataTableBodyCell"]}`;
+    let name = `${mainStyle["dataTableCellPadding"]} ${mainStyle["dataTableBodyCell"]}` || "";
 
     if (isEmptyValueDay(content.day)) {
         name += " " + mainStyle["dataTableBodyDisable"];

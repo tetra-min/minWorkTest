@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import RequestWrap from "@/utils/Request";
 
 export const uniqueArr = (arr: Array<string | number>) => {
     return arr.filter((element, index) => {
@@ -46,10 +47,20 @@ export const useScript = (src: string): [boolean, any] => {
     return [loading, error];
 };
 
-export async function getHolidays(startDate: string, endDate: string) {
-    let result = {};
+// export const request = async () => {
+//     const result = (() => {
+//         const reqObj = new Request();
+//     })()
 
-    // 取得したAPIキー
+// console.log(result)
+//     return result;
+// };
+
+export async function getHolidays(startDate: string, endDate: string) {
+    // let result: Promise<any> = new Promise((res) => res({}));
+    let result: any;
+
+    // APIキー
     const apiKey = "AIzaSyATm3HujEVPlLxbST04VCJyYz491UEw4h0";
 
     // カレンダーID
@@ -103,6 +114,14 @@ export async function getHolidays(startDate: string, endDate: string) {
         }
 
         result = await response.json();
+
+        // const reqObj = new RequestWrap({
+        //     url: `${url}?${searchParams}`,
+        // });
+
+        // // reqObj.send();
+
+        // result = reqObj.asyncSend();
     } catch (error: any) {
         console.error(error.message);
     }

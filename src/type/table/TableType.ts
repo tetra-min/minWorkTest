@@ -76,3 +76,9 @@ export type calcDataType = {
 export type mainTopSectionHandler = {
     updateCalcData: (data: calcDataType) => void;
 };
+
+export type holidayType = {
+    [year: number]: {
+        [date: string]: string;
+    };
+};

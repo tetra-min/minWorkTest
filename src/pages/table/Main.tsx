@@ -22,17 +22,12 @@ import {
     reduceCalcHoursAdd,
 } from "@/utils/table/Utils";
 
-import type { timeRecordType, mainTableHeaderType, mainTopSectionHandler } from "@/type/table/TableType";
+import type { timeRecordType, mainTableHeaderType, mainTopSectionHandler, holidayType } from "@/type/table/TableType";
 
 // test data
 import { userData as tempUserData, tableData as tempTableData } from "@/utils/table/TempData";
 
 const View = () => {
-    getHolidays("2024-1-1", "2024/12/31").then((res) => {
-        console.log(res.items);
-    });
-    // console.log(holidays);
-
     const [timeRecord, setTimeRecord] = useState<timeRecordType[]>([]);
     const [selectYear, setSelectYear] = useState<number>(new Date().getFullYear());
     const [selectMonth, setSelectMonth] = useState<number>(new Date().getMonth() + 1);
@@ -68,13 +63,69 @@ const View = () => {
         // setSelectYear(tempSelectYear);
         // setSelectMonth(tempSelectMonth);
 
-        initSetTimeRecord(
-            selectYear,
-            selectMonth,
-            fixedArriveTime.current,
-            fixedLeavingTime.current,
-            fixedlunchTime.current
-        );
+        // initSetTimeRecord(
+        //     selectYear,
+        //     selectMonth,
+        //     fixedArriveTime.current,
+        //     fixedLeavingTime.current,
+        //     fixedlunchTime.current
+        // );
+
+        // 日本祝日処理も一緒に
+        const tempHolidayStorage = localStorage.getItem("japaneseHoliday");
+        let holiday: holidayType = {};
+
+        if (tempHolidayStorage !== null) {
+            const parseHolidayStorage = JSON.parse(tempHolidayStorage);
+
+            if (selectYear in parseHolidayStorage) {
+                holiday = parseHolidayStorage;
+
+                initSetTimeRecord(
+                    selectYear,
+                    selectMonth,
+                    fixedArriveTime.current,
+                    fixedLeavingTime.current,
+                    fixedlunchTime.current,
+                    holiday
+                );
+            } else {
+                initSetTimeRecordGetHoliday();
+            }
+        } else {
+            initSetTimeRecordGetHoliday();
+        }
+
+        function initSetTimeRecordGetHoliday() {
+            getHolidays(`${selectYear}/1/1`, `${selectYear}/12/31`).then((res: any) => {
+                if (res.items && res.items.length) {
+                    holiday[selectYear] = {};
+
+                    for (const item of res.items) {
+                        if (item.start?.date) {
+                            holiday[selectYear][item.start.date.replace(/-/g, "/")] = item.summary;
+                        }
+                    }
+
+                    let setItemHoliday = holiday;
+                    if (tempHolidayStorage !== null) {
+                        const parseHolidayStorage = JSON.parse(tempHolidayStorage);
+                        setItemHoliday = Object.assign(holiday, parseHolidayStorage);
+                    }
+
+                    localStorage.setItem("japaneseHoliday", JSON.stringify(setItemHoliday));
+
+                    initSetTimeRecord(
+                        selectYear,
+                        selectMonth,
+                        fixedArriveTime.current,
+                        fixedLeavingTime.current,
+                        fixedlunchTime.current,
+                        holiday
+                    );
+                }
+            });
+        }
 
         // // setTimeout(() => {
         // //     setTimeRecord(record);
